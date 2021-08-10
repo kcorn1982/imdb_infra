@@ -1,0 +1,42 @@
+- name: install epel-release for python/pip
+  become: yes
+  yum:
+    name: epel-release
+
+- name: install python dependencies
+  become: yes
+  yum:
+    name: "{{ packages }}"
+  vars:
+    packages:
+      - python36
+      - python-pip
+      - python-setuptools
+      - postgresql-devel
+      - postgresql-libs
+      - python3-devel
+      - gcc
+
+#- name: install latest pip3
+#  become: yes
+#  pip:
+#    name: pip3
+#    state: latest
+
+- name: pull api repository
+  git:
+    repo: https://github.com/kcorn1982/imdb_api_vagrant.git
+    dest: /home/vagrant/imdb_api_vagrant
+
+- name: install psycopg2-binary
+  become: yes
+  shell: pip3 install psycopg2-binary
+
+- name: install api pip dependencies
+  become: yes
+  shell: pip3 install -r /home/vagrant/imdb_api_vagrant/requirements.txt
+
+- name: start API
+  command: gunicorn --bind 0.0.0.0:5000 app:app --daemon
+  args:
+    chdir: /home/vagrant/imdb_api_vagrant

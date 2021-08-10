@@ -1,0 +1,112 @@
+
+- name: Update and upgrade apt packages
+  apt:
+    upgrade: yes
+    update_cache: yes
+    cache_valid_time: 86400 #One day
+  become: yes
+
+- name: install postgresql & and supporting packages - pip, libpq-dev
+  apt:
+    pkg:
+      - postgresql
+      - libpq-dev
+  become: yes
+
+- name: Install python dependecies
+  apt:
+    pkg:
+      - python3-psycopg2
+  become: yes
+
+- name: copy postgres pg_hba.conf
+  become: yes
+  copy:
+    src: pg_hba.conf
+    dest: /etc/postgresql/9.5/main/pg_hba.conf
+    mode: preserve
+    owner: postgres
+    group: postgres
+    force: yes
+
+- name: copy postgres postgresql.conf
+  become: yes
+  copy:
+    src: postgresql.conf
+    dest: /etc/postgresql/9.5/main/postgresql.conf
+    mode: preserve
+    owner: postgres
+    group: postgres
+    force: yes
+
+- name: Start Postgres
+  service:
+    name: postgresql
+    state: restarted
+  become: yes
+
+# copy data seed csv
+- name: copy seed data to remote
+  copy:
+    src: imdb_data.csv
+    dest: /home/vagrant
+
+# create database
+- name: create imdb database
+  become: yes
+  become_user: "{{db_user}}"
+  postgresql_db:
+    name: "{{db_name}}"
+
+#create table
+- name: create imdb table
+  become: yes
+  become_user: "{{db_user}}"
+  postgresql_table:
+    db: imdb
+    name: movies
+    columns:
+      - id bigserial primary key
+      - title text
+      - score text
+      - year text
+      - duration text
+      - rating text
+      - budget text
+      - genres text
+      - plotkeywords text
+      - gross text
+      - director text
+      - actor1 text
+      - actor2 text
+      - actor3 text
+      - language text
+      - country text
+
+# seed movies table with data
+
+- name: seed imdb data
+  become: yes
+  become_user: "{{db_user}}"
+  postgresql_copy:
+    copy_from: /home/vagrant/imdb_data.csv
+    db: imdb
+    dst: movies
+    columns:
+      - title
+      - score
+      - year
+      - duration
+      - rating
+      - budget
+      - genres
+      - plotkeywords
+      - gross
+      - director
+      - actor1
+      - actor2
+      - actor3
+      - language
+      - country
+    options:
+      format: csv

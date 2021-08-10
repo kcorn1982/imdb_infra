@@ -1,0 +1,4 @@
+- hosts: ubuntu1
+  roles:
+    - common
+    - pg_db

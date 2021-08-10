@@ -1,0 +1,5 @@
+- hosts: centos1
+  roles:
+    - common
+    - imdb_api
+

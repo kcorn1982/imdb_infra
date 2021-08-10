@@ -1,0 +1,11 @@
+[vagrant:children]
+centos
+ubuntu
+
+[centos]
+centos1
+
+[ubuntu]
+ubuntu1
+
+

@@ -1,0 +1,11 @@
+- name: update yum
+  yum:
+    name: "*"
+    state: latest
+  become: yes
+
+- name: Install git
+  yum:
+    name: git
+    state: present
+  become: yes

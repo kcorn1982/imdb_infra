@@ -1,0 +1,11 @@
+- name: update apt
+  apt:
+    name: "*"
+    state: latest
+  become: yes
+
+- name: install git
+  apt:
+    name: git
+    state: present
+  become: yes

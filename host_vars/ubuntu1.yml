@@ -1,0 +1,2 @@
+ansible_private_key_file: .vagrant/machines/ubuntu1/virtualbox/private_key
+ansible_host: 192.168.33.10
